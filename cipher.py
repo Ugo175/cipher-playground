@@ -13,6 +13,8 @@ EXPECTED = (8.167, 1.492, 2.782, 4.253, 12.702, 2.228, 2.015, 6.094, 6.966,
 
 
 def substitute(text, key, decrypt=False):
+    if not isinstance(key, str) or any(character not in string.ascii_letters for character in key):
+        raise ValueError('Key must contain every ASCII letter exactly once.')
     key = key.lower()
     if len(key) != 26 or set(key) != set(ALPHABET):
         raise ValueError('Key must contain every ASCII letter exactly once.')
@@ -26,8 +28,12 @@ def caesar(text, shift):
     return substitute(text, ALPHABET[shift:] + ALPHABET[:shift])
 
 
+def ascii_letters(text):
+    return ''.join(character.lower() for character in text if character in string.ascii_letters)
+
+
 def frequency(text):
-    counts = Counter(character for character in text.lower() if character in ALPHABET)
+    counts = Counter(ascii_letters(text))
     total = sum(counts.values())
     return {letter: {'count': counts[letter],
                      'percent': round(100 * counts[letter] / total, 2) if total else 0}
@@ -35,13 +41,13 @@ def frequency(text):
 
 
 def crack(text):
-    total = sum(character in ALPHABET for character in text.lower())
+    total = len(ascii_letters(text))
     if not total:
         raise ValueError('Provide text containing ASCII letters.')
     guesses = []
     for shift in range(26):
         decoded = caesar(text, -shift)
-        counts = Counter(decoded.lower())
+        counts = Counter(ascii_letters(decoded))
         score = sum((counts[letter] - total * expected / 100) ** 2 / (total * expected / 100)
                     for letter, expected in zip(ALPHABET, EXPECTED))
         guesses.append({'encryption_shift': shift, 'score': round(score, 3), 'text': decoded})
