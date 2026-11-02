@@ -1,4 +1,4 @@
-# Cipher Notebook · Cipher Playgrounddd
+# Cipher Notebook · Cipher Playground
 
 **Every letter has another side.** A local, interactive notebook for Caesar shifts, substitution alphabets, frequency analysis, and original decoding puzzles.
 
